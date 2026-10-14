@@ -17,6 +17,8 @@ A small, reproducible Snowflake project demonstrating SQL transformations, data-
 
 ## Architecture
 
+![Snowflake Data Engineering Architecture](architecture-diagram/architecture.png)
+
 ```text
 Synthetic customer records
            |
@@ -148,3 +150,14 @@ A Cortex `AI_SENTIMENT` test was attempted, but the Snowflake trial returned an 
 ## Validation checklist
 
 Use [`docs/validation-checklist.md`](docs/validation-checklist.md) and compare the actual outputs in your account with the expected results above.
+
+## Project Evidence
+
+### Cleaned Customer Data
+![Clean customer view](screenshots/clean_customer_view.png)
+
+### Customer Summary
+![Customer summary](screenshots/customer_summary.png)
+
+### Email Masking
+![Email masking](screenshots/email_masking.png)
