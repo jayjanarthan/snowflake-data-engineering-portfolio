@@ -1,0 +1,38 @@
+-- 07_validation.sql
+-- Run sections under the indicated role. The role switch commands may need
+-- to be run separately depending on your Snowsight session setup.
+
+-- SECTION A: run as ACCOUNTADMIN.
+SELECT COUNT(*) AS RAW_ROW_COUNT
+FROM DE_PORTFOLIO_DB.RAW.CUSTOMERS;
+-- Expected: 7
+
+SELECT
+    CUSTOMER_ID, FIRST_NAME, LAST_NAME, STATE, CUSTOMER_STATUS
+FROM DE_PORTFOLIO_DB.ANALYTICS.CLEAN_CUSTOMERS
+ORDER BY CUSTOMER_ID;
+-- Expected: 4 rows (1001, 1002, 1003, 1005).
+
+SELECT *
+FROM DE_PORTFOLIO_DB.ANALYTICS.CUSTOMER_SUMMARY
+ORDER BY STATE, CUSTOMER_STATUS;
+-- Expected: CA / ACTIVE / 3 and TX / INACTIVE / 1.
+
+-- SECTION B: switch to DE_PORTFOLIO_ANALYST in Snowsight, then run:
+SELECT
+    CURRENT_ROLE() AS ACTIVE_ROLE,
+    COUNT(*) AS CUSTOMER_COUNT,
+    COUNT(DISTINCT CUSTOMER_ID) AS UNIQUE_CUSTOMERS,
+    COUNT_IF(EMAIL = '***MASKED***') AS MASKED_EMAILS
+FROM DE_PORTFOLIO_DB.ANALYTICS.CLEAN_CUSTOMERS;
+-- Expected: DE_PORTFOLIO_ANALYST / 4 / 4 / 4.
+
+SELECT CUSTOMER_ID, STATE, EMAIL
+FROM DE_PORTFOLIO_DB.ANALYTICS.CLEAN_CUSTOMERS
+ORDER BY CUSTOMER_ID;
+-- Expected: 4 rows; non-NULL emails are masked.
+
+-- Negative-access test: run as DE_PORTFOLIO_ANALYST.
+-- Expected: an authorization error because the role lacks RAW schema access.
+SELECT *
+FROM DE_PORTFOLIO_DB.RAW.CUSTOMERS;

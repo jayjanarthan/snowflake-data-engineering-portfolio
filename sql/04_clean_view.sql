@@ -1,0 +1,51 @@
+-- 04_clean_view.sql
+-- Filters are intentionally applied before deduplication.
+
+CREATE OR REPLACE VIEW DE_PORTFOLIO_DB.ANALYTICS.CLEAN_CUSTOMERS (
+    CUSTOMER_ID,
+    FIRST_NAME,
+    LAST_NAME,
+    EMAIL,
+    STATE,
+    SIGNUP_DATE,
+    CUSTOMER_STATUS
+) AS
+WITH valid_customers AS (
+    SELECT
+        CUSTOMER_ID,
+        FIRST_NAME,
+        LAST_NAME,
+        EMAIL,
+        STATE,
+        SIGNUP_DATE,
+        CUSTOMER_STATUS
+    FROM DE_PORTFOLIO_DB.RAW.CUSTOMERS
+    WHERE EMAIL IS NOT NULL
+      AND STATE IN ('CA', 'NY', 'TX')
+      AND CUSTOMER_STATUS IN ('ACTIVE', 'INACTIVE')
+),
+ranked_customers AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY CUSTOMER_ID
+            ORDER BY SIGNUP_DATE ASC
+        ) AS ROW_NUM
+    FROM valid_customers
+)
+SELECT
+    CUSTOMER_ID,
+    FIRST_NAME,
+    LAST_NAME,
+    EMAIL,
+    STATE,
+    SIGNUP_DATE,
+    CUSTOMER_STATUS
+FROM ranked_customers
+WHERE ROW_NUM = 1;
+
+-- Expected result: 4 rows.
+SELECT
+    CUSTOMER_ID, FIRST_NAME, LAST_NAME, STATE, CUSTOMER_STATUS
+FROM DE_PORTFOLIO_DB.ANALYTICS.CLEAN_CUSTOMERS
+ORDER BY CUSTOMER_ID;
