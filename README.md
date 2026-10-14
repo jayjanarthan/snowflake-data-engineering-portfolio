@@ -17,7 +17,7 @@ A small, reproducible Snowflake project demonstrating SQL transformations, data-
 
 ## Architecture
 
-![Snowflake Data Engineering Architecture](architecture-diagram/arch-diagram.png)
+![Snowflake Data Engineering Architecture](architecture-diagram/arch-diagram.PNG)
 
 ```text
 Synthetic customer records
